@@ -1,22 +1,23 @@
 using System;
-
+using System.IO; 
 class Program
 {
     static void Main(string[] args)
     {
         bool showMenu = true;
+        Journal journal = new Journal();
+        Console.WriteLine("***************************************************");
+        Console.WriteLine("Welcome to the Journal Program!");
         while (showMenu)
         {
             DisplayMenu();
             int option = PromptUserAnOption();
-            showMenu = ExecuteTheOption(option);
+            showMenu = ExecuteTheOption(option, journal);
         }
     }
 
     static void DisplayMenu()
     {
-        Console.WriteLine("***************************************************");
-        Console.WriteLine("Welcome to the Journal Program!");
         Console.WriteLine("Please select one of the following choices:");
         Console.WriteLine("1. Write");
         Console.WriteLine("2. Display");
@@ -32,10 +33,9 @@ class Program
         return option;
     }
 
-    static bool ExecuteTheOption(int option)
+    static bool ExecuteTheOption(int option,Journal journal)
     {
         bool showMenu = true;
-        Journal journal = new Journal();
         switch (option)
         {
             case 1:
@@ -45,10 +45,10 @@ class Program
                 Display(journal);
                 break;
             case 3:
-                Load();
+                Load(journal);
                 break;
             case 4:
-                Save();
+                Save(journal);
                 break;
             case 5:
                 showMenu = false;
@@ -65,10 +65,9 @@ class Program
         PromptGenerator promptGenerator = new PromptGenerator();
         string randomPrompt = promptGenerator.PickPrompt();
         Console.WriteLine(randomPrompt);
+        Console.Write("> ");
         string entryContent = Console.ReadLine();
-        Entry newEntry = new Entry();
-        newEntry._entryText = entryContent;
-        newEntry._promptText = randomPrompt;
+        Entry newEntry = new Entry(promptText:randomPrompt,entryText:entryContent);
         journal.AddEntry(newEntry);
     }
 
@@ -77,13 +76,13 @@ class Program
         journal.Display();
     }
 
-    static void Load()
+    static void Load(Journal journal)
     {
-        Console.WriteLine("Load");
+        journal.LoadFromFile();
     }
-    
-    static void Save()
+
+    static void Save(Journal journal)
     {
-        Console.WriteLine("Save");      
+        journal.SaveFromFile();
     }
 }

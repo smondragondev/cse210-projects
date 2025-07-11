@@ -10,6 +10,10 @@ public class PromptGenerator
 
     public string PickPrompt()
     {
-        return "";
+        // I used this https://stackoverflow.com/questions/2019417/how-to-access-random-item-in-list
+        Random random = new Random();
+        int index = random.Next(_prompts.Count);
+        string randomPrompt = _prompts[index];
+        return randomPrompt;
     }
 }

@@ -1,9 +1,23 @@
 using System;
-using System.IO; 
+using System.IO;
+using System.Threading.Tasks;
+
+/*
+Exceeding Requirements:
+    I added a database connection to save and load entries from a PostgreSQL database.
+    I followed this tutorial: "https://neon.com/postgresql/postgresql-csharp/postgresql-csharp-connect", but I adapted it
+    to this assignment. I didn't use async, so I changed some functions from the tutorial.
+    The connection string is in the "appsettings.json" file, and the class to manage loading the configuration
+    is "ConfigurationHelper".
+Simplifications:
+    - The database name is 'journal' and the table is 'entry', so when someone chooses option 5 or 6,
+      they don't need to specify the database or table; they are predefined.
+*/
 class Program
 {
     static void Main(string[] args)
     {
+
         bool showMenu = true;
         Journal journal = new Journal();
         Console.WriteLine("***************************************************");
@@ -15,15 +29,16 @@ class Program
             showMenu = ExecuteTheOption(option, journal);
         }
     }
-
     static void DisplayMenu()
     {
         Console.WriteLine("Please select one of the following choices:");
         Console.WriteLine("1. Write");
         Console.WriteLine("2. Display");
-        Console.WriteLine("3. Load");
-        Console.WriteLine("4. Save");
-        Console.WriteLine("5. Quit");
+        Console.WriteLine("3. Load From File");
+        Console.WriteLine("4. Save To File");
+        Console.WriteLine("5. Load From Data Base");
+        Console.WriteLine("6. Save To Data Base");
+        Console.WriteLine("7. Quit");
     }
 
     static int PromptUserAnOption()
@@ -33,7 +48,7 @@ class Program
         return option;
     }
 
-    static bool ExecuteTheOption(int option,Journal journal)
+    static bool ExecuteTheOption(int option, Journal journal)
     {
         bool showMenu = true;
         switch (option)
@@ -45,12 +60,18 @@ class Program
                 Display(journal);
                 break;
             case 3:
-                Load(journal);
+                LoadFromFile(journal);
                 break;
             case 4:
-                Save(journal);
+                SaveToFile(journal);
                 break;
             case 5:
+                LoadFromDB(journal);
+                break;
+            case 6:
+                SaveToDB(journal);
+                break;
+            case 7:
                 showMenu = false;
                 break;
             default:
@@ -67,7 +88,7 @@ class Program
         Console.WriteLine(randomPrompt);
         Console.Write("> ");
         string entryContent = Console.ReadLine();
-        Entry newEntry = new Entry(promptText:randomPrompt,entryText:entryContent);
+        Entry newEntry = new Entry(promptText: randomPrompt, entryText: entryContent);
         journal.AddEntry(newEntry);
     }
 
@@ -76,13 +97,23 @@ class Program
         journal.Display();
     }
 
-    static void Load(Journal journal)
+    static void LoadFromFile(Journal journal)
     {
         journal.LoadFromFile();
     }
 
-    static void Save(Journal journal)
+    static void SaveToFile(Journal journal)
     {
-        journal.SaveFromFile();
+        journal.SaveToFile();
     }
+
+    static void LoadFromDB(Journal journal)
+    {
+        journal.LoadFromDB();
+    }
+    static void SaveToDB(Journal journal)
+    {
+        journal.SaveToDB();
+    }
+
 }

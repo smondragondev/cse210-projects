@@ -1,3 +1,4 @@
+using Npgsql;
 public class Entry
 {
     public string _date;
@@ -27,8 +28,33 @@ public class Entry
         Console.WriteLine(_entryText);
     }
 
-    public void SaveInFile(StreamWriter outputFile)
+    public void SaveToFile(StreamWriter outputFile)
     {
         outputFile.WriteLine($"{_date}|{_promptText}|{_entryText}");
     }
+
+    public void SaveToDB(NpgsqlDataSource dataSource)
+    {
+        string sql = @"INSERT INTO entry(date,prompt,text)" +
+                    " values(@date,@prompt,@text)";
+        try
+        {
+            using var cmd = dataSource.CreateCommand(sql);
+            cmd.Parameters.AddWithValue("@date", _date);
+            cmd.Parameters.AddWithValue("@prompt", _promptText);
+            cmd.Parameters.AddWithValue("@text", _entryText);
+            cmd.ExecuteNonQuery();
+        }
+        catch (NpgsqlException ex)
+        {
+            Console.WriteLine($"Error inserting into DB: {ex.Message}");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error not db: {ex.Message}");
+            Console.WriteLine($"Stack trace: {ex.StackTrace}");
+        }
+    }
+
+    
 }

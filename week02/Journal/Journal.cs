@@ -1,3 +1,4 @@
+using Npgsql;
 public class Journal
 {
     public List<Entry> _entries = new List<Entry>();
@@ -14,7 +15,7 @@ public class Journal
         }
     }
 
-    public void SaveFromFile()
+    public void SaveToFile()
     {
         Console.Write("What is the filename? ");
         string filename = Console.ReadLine();
@@ -22,7 +23,7 @@ public class Journal
         {
             foreach (Entry entry in _entries)
             {
-                entry.SaveInFile(outputFile);
+                entry.SaveToFile(outputFile);
             }
         }
     }
@@ -45,9 +46,54 @@ public class Journal
         }
     }
 
+    public void SaveToDB()
+    {
+        string connectionString = ConfigurationHelper.GetConnectionString("DefaultConnection");
+        using (NpgsqlDataSource dataSource = NpgsqlDataSource.Create(connectionString))
+        {
+            foreach (Entry entry in _entries)
+            {
+                entry.SaveToDB(dataSource);
+            }
+        }
+    }
+
+    public void LoadFromDB()
+    {
+        string connectionString = ConfigurationHelper.GetConnectionString("DefaultConnection");
+        _entries.Clear();
+        try
+        {
+            using (NpgsqlDataSource dataSource = NpgsqlDataSource.Create(connectionString))
+            {
+                string sql = @"SELECT date,prompt,text FROM entry";
+
+                using var cmd = dataSource.CreateCommand(sql);
+                using var reader = cmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    string date = reader.GetString(0);
+                    string prompt = reader.GetString(1);
+                    string entryText = reader.GetString(2);
+                    Entry newEntry = new Entry(date: date, promptText: prompt, entryText: entryText);
+                    AddEntry(newEntry);
+                }
+            }
+        }
+        catch (NpgsqlException ex)
+        {
+            Console.WriteLine($"Error loading from DB: {ex.Message}");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error not db: {ex.Message}");
+            Console.WriteLine($"Stack trace: {ex.StackTrace}");
+        }
+    }
+
     public void AddEntry(Entry newEntry)
     {
         _entries.Add(newEntry);
     }
-    
+
 }

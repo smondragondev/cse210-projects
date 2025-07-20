@@ -4,7 +4,6 @@ public class ScriptureGenerator
 {
     List<Scripture> _scriptures = new List<Scripture>();
 
-
     public ScriptureGenerator()
     {
         this.ReadScripturesFromJson();

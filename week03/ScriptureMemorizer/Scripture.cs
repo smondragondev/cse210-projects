@@ -9,22 +9,45 @@ public class Scripture
         foreach (string wordText in text.Split(" "))
         {
             Word word = new Word(wordText);
-            _words.Append(word);
+            _words.Add(word);
         }
     }
 
-    public void HideRandomWords(int numberToHide)
+    public void HideRandomWords(int numberToHide=3)
     {
+        Random random = new Random();
+        int hiddenWords = 0;
+        int availableWords = _words.Count(word => !word.IsHidden());
+        numberToHide = Math.Min(availableWords, numberToHide);
+        
+        while (hiddenWords != numberToHide)
+        {
+            int index = random.Next(_words.Count);
+            Word randomWord = _words[index];
+            if (!randomWord.IsHidden())
+            {
+                hiddenWords++;
+            }
+            randomWord.Hide();
+        }
 
     }
 
     public string GetDisplayText()
     {
-        return "";
+        string referenceText = _reference.GetDisplayText();
+        string wordsText = "";
+        foreach (Word word in _words)
+        {
+            wordsText += word.GetDisplayText() + " ";
+        }
+        wordsText = wordsText.Trim();
+        return $"{referenceText} {wordsText}";
     }
 
     public bool isCompletelyHidden()
     {
-        return false;
+        Word visibleWord = _words.Find(word => !word.IsHidden());
+        return visibleWord == null ? true : false;
     }
 }

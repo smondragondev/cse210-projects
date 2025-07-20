@@ -21,7 +21,20 @@ public class Word
 
     public string GetDisplayText()
     {
-        return "";
+        if (_isHidden)
+        {
+            string hiddenText = "";
+            foreach (char c in _text)
+            {
+                hiddenText += "_";
+            }
+            return hiddenText;
+        }
+        return _text;
     }
 
+    public bool IsHidden()
+    {
+        return _isHidden;
+    }
 }

@@ -4,9 +4,8 @@ class Program
 {
     static void Main(string[] args)
     {
-        Reference reference = new Reference("Matthew", 16, 25);
-        string scriptureText = "For whosoever will save his life shall lose it: and whosoever will lose his life for my sake shall find it.";
-        Scripture scripture = new Scripture(reference, scriptureText);
+        ScriptureGenerator scriptureGenerator = new ScriptureGenerator();
+        Scripture scripture = scriptureGenerator.PickRandomScripture();
         bool runProgram = true;
         while (runProgram)
         {

@@ -1,7 +1,7 @@
 public class Running : Activity
 {
     private double _distance;
-    public Running(string date, int length, double distance) : base(date, length)
+    public Running(string date, double length, double distance) : base(date, length)
     {
         _name = "Running";
         _distance = distance;
@@ -9,16 +9,16 @@ public class Running : Activity
 
     public override double GetDistance()
     {
-        throw new NotImplementedException();
+        return _distance;
     }
 
     public override double GetPace()
     {
-        throw new NotImplementedException();
+        return _length / _distance ;
     }
 
     public override double GetSpeed()
     {
-        throw new NotImplementedException();
+        return 60 / GetPace();
     }
 }
